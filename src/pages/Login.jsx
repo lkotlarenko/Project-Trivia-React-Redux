@@ -50,7 +50,12 @@ class Login extends Component {
             onChange={ this.handleChange }
             placeholder="e-mail"
           />
-          <button data-testid="btn-play" type="button" disabled={ disabled }>
+          <button
+            data-testid="btn-play"
+            type="button"
+            disabled={ disabled }
+            onClick={ () => {} }
+          >
             Play
           </button>
         </form>
