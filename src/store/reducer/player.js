@@ -14,7 +14,8 @@ function player(state = INITIAL_STATE, { type, payload }) {
   case PLAYER_DATA:
     return {
       ...state,
-      player: payload,
+      name: payload.name,
+      gravatarEmail: payload.email,
     };
   case RESPONSE_API:
     return {
