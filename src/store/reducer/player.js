@@ -6,6 +6,7 @@ const INITIAL_STATE = {
   score: 0,
   gravatarEmail: '',
   error: '',
+  token: '',
 };
 
 function player(state = INITIAL_STATE, { type, payload }) {
