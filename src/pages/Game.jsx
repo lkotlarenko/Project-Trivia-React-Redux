@@ -9,6 +9,7 @@ class Game extends React.Component {
     super();
     this.state = {
       questions: [],
+      questionNumber: 0,
     };
   }
 
@@ -18,28 +19,31 @@ class Game extends React.Component {
 
   // cria função async que pega as perguntas e respostas da API
   renderAlternatives = async () => {
-    const { token } = this.props;
-    if (!token) {
-      fetchToken(this.state);
-    }
+    const { token, fetchNewToken } = this.props;
     try {
       /* const GET = await fetch(
         'https://opentdb.com/api_token.php?command=request',
         );
         console.log(GET); */
-      const response = await fetch(
-        `https://opentdb.com/api.php?amount=5&token=${token}`,
-      );
-      const JSON = await response.json();
-      if (JSON.response_code === 0) {
-        this.setState({ questions: JSON.results });
-      } else {
-        fetchToken(this.state);
+      console.log(token);
+      let dataAPI = await this.fetchAPI(token);
+      if (dataAPI.response_code !== 0) {
+        console.log('entrou no if');
+        fetchNewToken(this.state);
+        console.log(token);
+        dataAPI = this.fetchAPI(token);
       }
+      this.setState({ questions: dataAPI.results });
     } catch (error) {
       console.log(error);
     }
   };
+
+  fetchAPI = async (token) => {
+    const response = await fetch(`https://opentdb.com/api.php?amount=5&token=${token}`);
+    const JSON = await response.json();
+    return JSON;
+  }
 
   // link da função: https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
   shuffle = (array) => {
@@ -61,44 +65,55 @@ class Game extends React.Component {
   }
 
   render() {
-    const { questions } = this.state;
+    const { questions, questionNumber } = this.state;
     return (
-      <did>
+      <div>
         <Header />
         <main>
           {questions.map((element, index) => {
-            const answers = [
-              ['correct_answer', element.correct_answer],
-              ['incorrect_answer', element.incorrect_answers[0]],
-              ['incorrect_answer', element.incorrect_answers[1]],
-              ['incorrect_answer', element.incorrect_answers[2]],
-            ];
-            const shuffleAnswers = this.shuffle(answers);
-            return (
-              <div key={ index }>
-                <h2 data-testid="question-category">{element.category}</h2>
-                <h2 data-testid="question-text">{element.question}</h2>
-                <div data-testid="answer-options">
-                  {shuffleAnswers.map((value, newPosition) => (
-                    <button type="button" data-testid="correct-answer"
-                  ));
-                  {/* <button type="button" data-testid="correct-answer">
-                    {element.correct_answer}
-                  </button>
-                  {element.incorrect_answers.map((value, position) => (
-                    <button
-                      type="button"
-                      data-testid={ `wrong-answer-${position}` }
-                      key={ position }
-                    >
-                      {value}
-                    </button> */}
-                  ))};
+            if (questionNumber === index) {
+              const answers = [
+                ['correct_answer', element.correct_answer],
+                ['incorrect_answer', element.incorrect_answers[0]],
+                ['incorrect_answer', element.incorrect_answers[1]],
+                ['incorrect_answer', element.incorrect_answers[2]],
+              ];
+              if (!answers[3][1]) {
+                answers.pop();
+                answers.pop();
+              }
+              const shuffleAnswers = this.shuffle(answers);
+              return (
+                <div key={ index }>
+                  <h2 data-testid="question-category">{element.category}</h2>
+                  <h2 data-testid="question-text">{element.question}</h2>
+                  <div data-testid="answer-options">
+                    {shuffleAnswers.map((answer, i) => (answer[0] === 'correct_answer'
+                      ? (
+                        <button
+                          key={ i }
+                          type="button"
+                          data-testid="correct-answer"
+                        >
+                          {answer[1]}
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          data-testid={ `wrong-answer-${i}` }
+                          key={ i }
+                        >
+                          {answer[1]}
+                        </button>
+                      )))}
+                  </div>
                 </div>
-              </div>);
+              );
+            }
+            return null;
           })}
         </main>
-      </did>
+      </div>
     );
   }
 }
@@ -113,6 +128,7 @@ Game.propTypes = {
 
 const mapDispatchToProps = (dispatch) => ({
   fetchToken: (state) => dispatch(fetchAPI(state)),
+  fetchNewToken: (state) => dispatch(fetchToken(state)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Game);

@@ -3,6 +3,7 @@ import { Route, Switch } from 'react-router-dom';
 import Feedback from './pages/Feedback';
 import Game from './pages/Game';
 import Login from './pages/Login';
+import Ranking from './pages/Ranking';
 import Settings from './pages/Settings';
 
 class App extends Component {
@@ -13,6 +14,7 @@ class App extends Component {
         <Route exact path="/game" component={ Game } />
         <Route exact path="/feedback" component={ Feedback } />
         <Route exact path="/settings" component={ Settings } />
+        <Route exact path="/ranking" component={ Ranking } />
       </Switch>
     );
   }
