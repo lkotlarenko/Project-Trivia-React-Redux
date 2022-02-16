@@ -3,7 +3,8 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import logo from '../trivia.png';
 import '../App.css';
-import { fetchAPI, saveDataPlayer } from '../store/actions';
+import { receivedToken, saveDataPlayer } from '../store/actions';
+import fetchTokenApi from '../services/userToken';
 
 class Login extends Component {
   constructor() {
@@ -29,10 +30,10 @@ class Login extends Component {
     }
   };
 
-  handleClick = () => {
+  handleClick = async () => {
     const { fetchToken, history, saveData } = this.props;
     const { name, email } = this.state;
-    fetchToken(this.state);
+    fetchToken(await fetchTokenApi());
     saveData({ name, email });
     history.push('/game');
   }
@@ -96,7 +97,7 @@ Login.propTypes = {
 }.isRequired;
 
 const mapDispatchToProps = (dispatch) => ({
-  fetchToken: (state) => dispatch(fetchAPI(state)),
+  fetchToken: (token) => dispatch(receivedToken(token)),
   saveData: (state) => dispatch(saveDataPlayer(state)),
 });
 
