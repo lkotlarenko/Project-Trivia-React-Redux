@@ -4,13 +4,16 @@ import { connect } from 'react-redux';
 import Header from '../components/Header';
 import { receivedToken } from '../store/actions';
 import fetchTokenApi from '../services/userToken';
+import '../css/Game.css';
 
+const FINAL_ANSWER = 4;
 class Game extends React.Component {
   constructor() {
     super();
     this.state = {
       questions: [],
       questionNumber: 0,
+      answered: false,
     };
   }
 
@@ -57,8 +60,40 @@ class Game extends React.Component {
     return array;
   }
 
+  handleAnswer = ({ target }) => {
+    this.setState({ answered: true });
+    if (target.id === 'correct') {
+      // TODO: somar pontuação a partir daqui :D
+      // console.log("cai aqui quando acerta");
+    } else {
+      // console.log("cai aqui quando erra");
+    }
+  }
+
+  handleNext = () => {
+    const { questionNumber } = this.state;
+    const { history } = this.props;
+    if (questionNumber < FINAL_ANSWER) {
+      this.setState({
+        questionNumber: questionNumber + 1,
+        answered: false,
+      });
+    } else if (questionNumber === FINAL_ANSWER) {
+      history.push('/feedback');
+    }
+  }
+
   render() {
-    const { questions, questionNumber } = this.state;
+    const { questions, questionNumber, answered } = this.state;
+    const nextButton = (
+      <button
+        onClick={ this.handleNext }
+        type="button"
+        data-testid="btn-next"
+      >
+        Next
+      </button>);
+
     return (
       <div>
         <Header />
@@ -87,18 +122,27 @@ class Game extends React.Component {
                           key={ i }
                           type="button"
                           data-testid="correct-answer"
+                          id="correct"
+                          onClick={ this.handleAnswer }
+                          className={ answered ? 'correct' : null }
+                          disabled={ answered }
                         >
                           {answer[1]}
                         </button>
                       ) : (
                         <button
+                          key={ i }
                           type="button"
                           data-testid={ `wrong-answer-${i}` }
-                          key={ i }
+                          id="incorrect"
+                          onClick={ this.handleAnswer }
+                          className={ answered ? 'incorrect' : null }
+                          disabled={ answered }
                         >
                           {answer[1]}
                         </button>
                       )))}
+                    {answered && nextButton}
                   </div>
                 </div>
               );
@@ -118,6 +162,9 @@ const mapStateToProps = (state) => ({
 Game.propTypes = {
   token: PropTypes.string,
   fetchToken: PropTypes.func,
+  history: PropTypes.shape({
+    push: PropTypes.func,
+  }),
 }.isRequired;
 
 const mapDispatchToProps = (dispatch) => ({
