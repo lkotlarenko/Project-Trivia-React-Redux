@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import md5 from 'crypto-js/md5';
 import Header from '../components/Header';
 import { receivedToken, saveAssertions, saveScore } from '../store/actions';
 import fetchTokenApi from '../services/userToken';
@@ -71,10 +72,7 @@ class Game extends React.Component {
   handleAnswer = ({ target }) => {
     this.setState({ answered: true });
     if (target.id === 'correct') {
-      // TODO: somar pontuação a partir daqui :D
       this.setScore();
-    } else {
-      // console.log("cai aqui quando erra");
     }
   }
 
@@ -98,8 +96,8 @@ class Game extends React.Component {
   }
 
   handleNext = () => {
-    const { questionNumber } = this.state;
-    const { history } = this.props;
+    const { questionNumber, score } = this.state;
+    const { history, name, email } = this.props;
     if (questionNumber < FINAL_ANSWER) {
       this.setState({
         questionNumber: questionNumber + 1,
@@ -108,6 +106,21 @@ class Game extends React.Component {
         timer: 30,
       });
     } else if (questionNumber === FINAL_ANSWER) {
+      const ranking = JSON.parse(localStorage.getItem('ranking'));
+      if (ranking) {
+        const gravatar = md5(email).toString();
+        const newRanking = [
+          ...ranking,
+          { name, score, picture: `https://www.gravatar.com/avatar/${gravatar}` },
+        ];
+        localStorage.setItem('ranking', JSON.stringify(newRanking));
+      } else {
+        const gravatar = md5(email).toString();
+        const newRanking = [
+          { name, score, picture: `https://www.gravatar.com/avatar/${gravatar}` },
+        ];
+        localStorage.setItem('ranking', JSON.stringify(newRanking));
+      }
       history.push('/feedback');
     }
   }
@@ -150,7 +163,7 @@ class Game extends React.Component {
       <div>
         <Header />
         <main>
-          {questions.map((element, index) => {
+          {questions && questions.map((element, index) => {
             if (questionNumber === index) {
               const answers = [
                 ['correct_answer', element.correct_answer],
@@ -209,10 +222,14 @@ class Game extends React.Component {
 
 const mapStateToProps = (state) => ({
   token: state.token,
+  name: state.player.name,
+  email: state.player.gravatarEmail,
 });
 
 Game.propTypes = {
   token: PropTypes.string,
+  email: PropTypes.string,
+  name: PropTypes.string,
   fetchToken: PropTypes.func,
   saveScoreToStore: PropTypes.func,
   saveAssertionsToStore: PropTypes.func,
