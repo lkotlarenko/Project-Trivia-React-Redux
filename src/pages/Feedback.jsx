@@ -7,10 +7,10 @@ class Feedback extends React.Component {
   handleButton = (route) => {
     const { history } = this.props;
     history.push(route);
-  }
+  };
 
   render() {
-    const { assertions } = this.props;
+    const { assertions, score } = this.props;
     const MIN_ASSERTIONS = 3;
 
     return (
@@ -33,9 +33,21 @@ class Feedback extends React.Component {
           </button>
         </nav>
         <main>
-          {assertions < MIN_ASSERTIONS
-            ? <p data-testid="feedback-text">Could be better...</p>
-            : <p data-testid="feedback-text">Well Done!</p>}
+          <h3>
+            Você fez
+            <h4 data-testid="feedback-total-score">{score}</h4>
+            pontos
+          </h3>
+          <h3>
+            Você acertou
+            <h4 data-testid="feedback-total-question">{assertions}</h4>
+            questões
+          </h3>
+          {assertions < MIN_ASSERTIONS ? (
+            <p data-testid="feedback-text">Could be better...</p>
+          ) : (
+            <p data-testid="feedback-text">Well Done!</p>
+          )}
         </main>
       </div>
     );
@@ -44,10 +56,12 @@ class Feedback extends React.Component {
 
 const mapStateToProps = (state) => ({
   assertions: state.player.assertions,
+  score: state.player.score,
 });
 
 Feedback.propTypes = {
   assertions: PropTypes.number,
+  score: PropTypes.number,
   history: PropTypes.shape({
     push: PropTypes.func,
   }),

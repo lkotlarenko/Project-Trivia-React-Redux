@@ -2,8 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Header from '../components/Header';
-import { receivedToken } from '../store/actions';
+import { receivedToken, saveAssertions, saveScore } from '../store/actions';
 import fetchTokenApi from '../services/userToken';
+import getScore from '../services/score';
 import '../css/Game.css';
 
 const FINAL_ANSWER = 4;
@@ -19,6 +20,8 @@ class Game extends React.Component {
       timer: 30,
       shuffleNeeded: true,
       shuffleAnswers: [],
+      score: 0,
+      assertions: 0,
     };
   }
 
@@ -69,10 +72,29 @@ class Game extends React.Component {
     this.setState({ answered: true });
     if (target.id === 'correct') {
       // TODO: somar pontuação a partir daqui :D
-      // console.log("cai aqui quando acerta");
+      this.setScore();
     } else {
       // console.log("cai aqui quando erra");
     }
+  }
+
+  localHandler = () => {
+    const { score, assertions } = this.state;
+    const { saveScoreToStore, saveAssertionsToStore } = this.props;
+    localStorage.setItem('actualScore', JSON.stringify(score));
+    saveScoreToStore(score);
+    saveAssertionsToStore(assertions);
+  }
+
+  setScore = () => {
+    const { questionNumber, questions, timer } = this.state;
+    const { difficulty } = questions[questionNumber];
+    const newScore = getScore(timer, difficulty);
+    this.setState((prevState) => ({
+      score: newScore + prevState.score,
+      assertions: prevState.assertions + 1,
+    }),
+    this.localHandler);
   }
 
   handleNext = () => {
@@ -192,6 +214,8 @@ const mapStateToProps = (state) => ({
 Game.propTypes = {
   token: PropTypes.string,
   fetchToken: PropTypes.func,
+  saveScoreToStore: PropTypes.func,
+  saveAssertionsToStore: PropTypes.func,
   history: PropTypes.shape({
     push: PropTypes.func,
   }),
@@ -199,6 +223,8 @@ Game.propTypes = {
 
 const mapDispatchToProps = (dispatch) => ({
   fetchToken: (token) => dispatch(receivedToken(token)),
+  saveScoreToStore: (score) => dispatch(saveScore(score)),
+  saveAssertionsToStore: (assertions) => dispatch(saveAssertions(assertions)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Game);
