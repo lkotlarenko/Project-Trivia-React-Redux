@@ -1,4 +1,4 @@
-import { PLAYER_DATA } from '../actions';
+import { PLAYER_DATA, SAVE_ASSERTIONS, SAVE_SCORE } from '../actions';
 
 const INITIAL_STATE = {
   name: '',
@@ -16,11 +16,10 @@ function player(state = INITIAL_STATE, { type, payload }) {
       name: payload.name,
       gravatarEmail: payload.email,
     };
-  // case FAILED_REQUEST:
-  //   return {
-  //     ...state,
-  //     error: payload,
-  //   };
+  case SAVE_SCORE:
+    return { ...state, score: payload };
+  case SAVE_ASSERTIONS:
+    return { ...state, assertions: payload };
   default:
     return state;
   }
