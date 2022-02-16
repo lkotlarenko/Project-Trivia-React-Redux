@@ -1,4 +1,4 @@
-import { FAILED_REQUEST, PLAYER_DATA, RESPONSE_API } from '../actions';
+import { PLAYER_DATA } from '../actions';
 
 const INITIAL_STATE = {
   name: '',
@@ -6,7 +6,6 @@ const INITIAL_STATE = {
   score: 0,
   gravatarEmail: '',
   error: '',
-  token: '',
 };
 
 function player(state = INITIAL_STATE, { type, payload }) {
@@ -17,16 +16,11 @@ function player(state = INITIAL_STATE, { type, payload }) {
       name: payload.name,
       gravatarEmail: payload.email,
     };
-  case RESPONSE_API:
-    return {
-      ...state,
-      token: payload.token,
-    };
-  case FAILED_REQUEST:
-    return {
-      ...state,
-      error: payload,
-    };
+  // case FAILED_REQUEST:
+  //   return {
+  //     ...state,
+  //     error: payload,
+  //   };
   default:
     return state;
   }

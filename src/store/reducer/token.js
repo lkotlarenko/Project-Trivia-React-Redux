@@ -1,6 +1,6 @@
 import { RECEIVED_TOKEN } from '../actions';
 
-const Token = '';
+const Token = 'seila';
 const INITIAL_STATE = Token;
 
 function token(state = INITIAL_STATE, { type, payload }) {

@@ -4,7 +4,7 @@ const fetchTokenApi = async () => {
   try {
     const response = await fetch(url);
     const JSON = await response.json();
-    return JSON;
+    return JSON.token;
   } catch (error) {
     console.log(error);
   }
