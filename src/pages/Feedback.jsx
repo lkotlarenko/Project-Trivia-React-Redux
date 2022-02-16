@@ -34,15 +34,13 @@ class Feedback extends React.Component {
         </nav>
         <main>
           <h3>
-            Você fez
-            <h4 data-testid="feedback-total-score">{score}</h4>
-            pontos
+            Pontuação:
           </h3>
+          <h4 data-testid="feedback-total-score">{score}</h4>
           <h3>
-            Você acertou
-            <h4 data-testid="feedback-total-question">{assertions}</h4>
-            questões
+            Acertos:
           </h3>
+          <h4 data-testid="feedback-total-question">{assertions}</h4>
           {assertions < MIN_ASSERTIONS ? (
             <p data-testid="feedback-text">Could be better...</p>
           ) : (
