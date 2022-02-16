@@ -7,6 +7,8 @@ import fetchTokenApi from '../services/userToken';
 import '../css/Game.css';
 
 const FINAL_ANSWER = 4;
+const ONE_SECOND = 1000;
+const THIRTY_SECONDS = 30000;
 class Game extends React.Component {
   constructor() {
     super();
@@ -14,6 +16,9 @@ class Game extends React.Component {
       questions: [],
       questionNumber: 0,
       answered: false,
+      timer: 30,
+      shuffleNeeded: true,
+      shuffleAnswers: [],
     };
   }
 
@@ -77,14 +82,39 @@ class Game extends React.Component {
       this.setState({
         questionNumber: questionNumber + 1,
         answered: false,
+        shuffleNeeded: true,
+        timer: 30,
       });
     } else if (questionNumber === FINAL_ANSWER) {
       history.push('/feedback');
     }
   }
 
+  forceClear = (timer) => {
+    const { answered } = this.state;
+    if (answered) {
+      clearInterval(timer);
+    }
+  }
+
+  roundTimer = () => {
+    const roundTimer = setInterval(() => this.setState((prevState) => ({
+      timer: prevState.timer - 1 }), this.forceClear(roundTimer)), ONE_SECOND);
+    setTimeout(() => {
+      clearInterval(roundTimer); this.setState({ answered: true });
+    }, THIRTY_SECONDS);
+  }
+
+  checkShuffle = (answers) => {
+    const { shuffleNeeded } = this.state;
+    if (shuffleNeeded) {
+      this.setState({ shuffleNeeded: false, shuffleAnswers: this.shuffle(answers) },
+        this.roundTimer);
+    }
+  }
+
   render() {
-    const { questions, questionNumber, answered } = this.state;
+    const { questions, questionNumber, answered, shuffleAnswers } = this.state;
     const nextButton = (
       <button
         onClick={ this.handleNext }
@@ -110,7 +140,7 @@ class Game extends React.Component {
                 answers.pop();
                 answers.pop();
               }
-              const shuffleAnswers = this.shuffle(answers);
+              this.checkShuffle(answers);
               return (
                 <div key={ index }>
                   <h2 data-testid="question-category">{element.category}</h2>
