@@ -29,12 +29,6 @@ We developed a game of questions and answers based on the game **Trivia** using 
 
 ---
 
-## Development
-
-Figma Used in this [**Project**](https://www.figma.com/file/9xuqiwkefbfbzn5t8mmzjy/trivia---project?node-id=0%3A1).
-
----
-
 ## Time
 
 - Dev Group project
