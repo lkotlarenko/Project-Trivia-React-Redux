@@ -51,3 +51,10 @@ API used in this [**project**](https://opentdb.com/api_config.php).
 - [@PedroBChaves](https://github.com/PedroBChaves)
 
 ---
+
+## Deploy
+
+Test our app deploy [here](https://project-trivia-react-redux-lkotlarenko.vercel.app).
+
+---
+
